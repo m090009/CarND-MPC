@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/tohamy/Workspaces/carnd/CarND-MPC-Project/src/MPC.cpp" "/Users/tohamy/Workspaces/carnd/CarND-MPC-Project/build/CMakeFiles/mpc.dir/src/MPC.cpp.o"
-  "/Users/tohamy/Workspaces/carnd/CarND-MPC-Project/src/main.cpp" "/Users/tohamy/Workspaces/carnd/CarND-MPC-Project/build/CMakeFiles/mpc.dir/src/main.cpp.o"
+  "/Users/tohamy/Workspaces/carnd/CarND-MPC/src/MPC.cpp" "/Users/tohamy/Workspaces/carnd/CarND-MPC/build/CMakeFiles/mpc.dir/src/MPC.cpp.o"
+  "/Users/tohamy/Workspaces/carnd/CarND-MPC/src/main.cpp" "/Users/tohamy/Workspaces/carnd/CarND-MPC/build/CMakeFiles/mpc.dir/src/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 
