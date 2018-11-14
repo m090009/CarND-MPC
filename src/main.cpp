@@ -131,7 +131,7 @@ int main() {
           Eigen::VectorXd waypoints_y = waypoints.row(1);
 
 
-          // Fit a 1st order polynomial to the x and y waypoints
+          // Fit a 3rd order polynomial to the x and y waypoints
           auto coeffs = polyfit(waypoints_x, waypoints_y, 3);
           // calculate Cross track erro
           double cte = polyeval(coeffs, 0);
