@@ -8,7 +8,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "MPC.h"
-
+#include <fstream>
 // for convenience
 using json = nlohmann::json;
 
@@ -16,6 +16,9 @@ using json = nlohmann::json;
 constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
+// Creating a file to store steering values
+std::ofstream steering_vals;
+
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -84,6 +87,14 @@ Eigen::MatrixXd toCarCoordinates(double px,
 }
 
 int main() {
+  steering_vals.open("../data/steering_vals.txt", ios::out);
+  cout << "opening steering_vals.txt file" << endl;
+  // Check for errors opening the files
+  if( !steering_vals.is_open() )
+  {
+    cout << "Error opening steering_vals.txt file" << endl;
+    exit(1);
+  }
   uWS::Hub h;
 
   // MPC is initialized here!
@@ -168,6 +179,8 @@ int main() {
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
           msgJson["steering_angle"] = - steer_value/ deg2rad(25);
           msgJson["throttle"] = throttle_value;
+          // Writing steering values to the file 
+          steering_vals << - steer_value/ deg2rad(25) << endl;
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
