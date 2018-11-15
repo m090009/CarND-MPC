@@ -68,25 +68,26 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
+// Method that translates the values from world state to the vehicle prespective
 Eigen::MatrixXd toCarCoordinates(double px, 
                           double py, 
                           double psi, 
                           const vector<double>& ptsx, 
                           const vector<double>& ptsy){
-
+    
     unsigned len = ptsx.size();
-    auto waypoints = Eigen::MatrixXd(2, len);// PS: Check the use of auto
-    for (auto i=0; i<len ; ++i){
+    auto waypoints = Eigen::MatrixXd(2, len);//heck the use of auto
+    for (auto i = 0; i < len ; ++i){
       double dx = ptsx[i] - px;
       double dy = ptsy[i] - py;
       waypoints(0,i) = cos(psi) * dx + sin(psi) * dy;
       waypoints(1,i) = - sin(psi) * dx + cos(psi) * dy;  
-    } 
-
+    }
     return waypoints;
 }
 
 int main() {
+  // File stream to write steering data to
   steering_vals.open("../data/steering_vals.txt", ios::out);
   cout << "opening steering_vals.txt file" << endl;
   // Check for errors opening the files
@@ -177,25 +178,17 @@ int main() {
           // cout << "Tis is the " << deg2rad(25) << endl;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
+          // Negative value for the angle because the simulator has a mirrored orientation
           msgJson["steering_angle"] = - steer_value/ deg2rad(25);
           msgJson["throttle"] = throttle_value;
           // Writing steering values to the file 
           steering_vals << - steer_value/ deg2rad(25) << endl;
-          //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals;
-          vector<double> mpc_y_vals;
+          
 
-          // for (int i = 2; i < values.size(); i++){
-          //   if (i%2 == 0){
-          //     mpc_x_vals.push_back(solved_values.x.at(i));
-          //   } else {
-          //     mpc_y_vals.push_back(solved_values.y.at(i));
-          //   }
-          // }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-
+          // Setting the displayable MPC predicted trajectory
           msgJson["mpc_x"] = solved_values.x;
           msgJson["mpc_y"] = solved_values.y;
 
@@ -205,6 +198,7 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+          // Setting the displayable trajectory yellow line
           for (double i = 0; i < ptsy.size(); ++i){
                 next_x_vals.push_back(waypoints_x(i));
                 next_y_vals.push_back(waypoints_y(i));

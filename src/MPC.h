@@ -5,7 +5,7 @@
 #include "Eigen-3.3/Eigen/Core"
 
 using namespace std;
-
+// Resut struct to hold the values ofr the optimization
 struct Result {
   vector<double> x;
   vector<double> y;
@@ -24,7 +24,8 @@ class MPC {
   Result Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs);
   // Previous a and delta values initialized
   double prev_a{0};
-  double prev_delta{0.1};
+  double prev_delta{.1};
+  // 100 ms latency which count for 2 time steps with out current dt 0.05
   const int latency_timestep = 2;
 };
 

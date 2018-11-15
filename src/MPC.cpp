@@ -23,6 +23,7 @@ const double dt = 0.05;
 const double Lf = 2.67;
 
 // Reference values for errors and velocity
+// 80 to get the speed up to 70
 double ref_v = 85;
 
 // The solver takes a single vector for both the state and actuator values 
@@ -40,10 +41,8 @@ class FG_eval {
  public:
   // Fitted polynomial coefficients
   Eigen::VectorXd coeffs;
-  vector<double> prev_actuator_values;
-  FG_eval(Eigen::VectorXd coeffs, vector<double> prev_actuator_values) { 
-    this->coeffs = coeffs; 
-    this-> prev_actuator_values = prev_actuator_values;
+  FG_eval(Eigen::VectorXd coeffs) {
+    this->coeffs = coeffs;
   }
 
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
@@ -67,7 +66,7 @@ class FG_eval {
     // for making smooth turns
     for (int t = 0; t < N - 1; t++) {
       fg[0] += CppAD::pow(vars[delta_start + t], 2);
-      
+      // Weight for
       fg[0] += 10 * CppAD::pow(vars[a_start + t], 2);
 
     }
@@ -78,7 +77,7 @@ class FG_eval {
 
     for (int t = 0; t < N - 2; t++) {
       // Added a 100 and 10 to get a smoother transition from -25 to 25 degrees
-      // Steering and speed penalty 
+      // Steering weight
       fg[0] += 700 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
       fg[0] += CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
     }
@@ -95,9 +94,9 @@ class FG_eval {
 
 
 
-
+    // We add 1
     for (int t = 0; t < N - 1; t++) {
-      // The state at time t+1 .
+      // The state at time t + 1 + 1 to mind the delay .
       AD<double> x1 = vars[x_start + t + 1];
       AD<double> y1 = vars[y_start + t + 1];
       AD<double> psi1 = vars[psi_start + t + 1];
@@ -129,6 +128,7 @@ class FG_eval {
       // v_[t+1] = v[t] + a[t] * dt
       // cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
       // epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
+      // + 2 to mind the delay time steps
       fg[2 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[2 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
       fg[2 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
@@ -184,7 +184,7 @@ Result MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
-
+    
   // Set all non-actuators upper and lowerlimits to anything
   for (int i = 0; i < delta_start; i++) {
     vars_lowerbound[i] = -1.0e19;
@@ -195,13 +195,14 @@ Result MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // degrees (values in radians).
   // NOTE: Feel free to change this to something else.
   // double deg2rad(double x) { return x * pi() / 180; };
+  // 0.436332 is 25 in rads
   for (int i = delta_start; i < a_start; i++) {
-    vars_lowerbound[i] = -0.436332;
+    vars_lowerbound[i] = - 0.436332;
     vars_upperbound[i] = 0.436332;
   }
   // cout << "Previous delta :" << prev_delta << endl;
   // cout << "Previous a :" << prev_a << endl;
-  // TODOO
+  // Constraint acctuator values to the previous values delta
   for (int i = delta_start; i < delta_start + latency_timestep; i++){
     vars_lowerbound[i] = prev_delta;
     vars_upperbound[i] = prev_delta;
@@ -214,7 +215,7 @@ Result MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     vars_lowerbound[i] = -1.0;
     vars_upperbound[i] = 1.0;
   }
-
+ // Constraint acctuator values to the previous values acceleration
   for (int i = a_start; i < a_start + latency_timestep; i++) {
     vars_lowerbound[i] = prev_a;
     vars_upperbound[i] = prev_a;
@@ -288,6 +289,7 @@ Result MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // vector<double> result;
   // result.push_back(solution.x[delta_start]);
   // result.push_back(solution.x[a_start]);
+  // Resut struct to hold the values ofr the optimization
   Result result;
 
   for (auto i = 0; i < N - 1; i++) {
