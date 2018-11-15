@@ -1,3 +1,0 @@
-/home/mohamed/carnd/CarND-MPC/build/CMakeFiles/rebuild_cache.dir
-/home/mohamed/carnd/CarND-MPC/build/CMakeFiles/mpc.dir
-/home/mohamed/carnd/CarND-MPC/build/CMakeFiles/edit_cache.dir
