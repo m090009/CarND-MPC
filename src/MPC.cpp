@@ -244,9 +244,9 @@ Result MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   constraints_upperbound[cte_start] = cte;
   constraints_upperbound[epsi_start] = epsi;
 
-  vector<double> prev_actuator_values = {prev_delta, prev_a};
+//  vector<double> prev_actuator_values = {prev_delta, prev_a};
   // object that computes objective and constraints
-  FG_eval fg_eval(coeffs, prev_actuator_values);
+  FG_eval fg_eval(coeffs);
 
   //
   // NOTE: You don't have to worry about these options

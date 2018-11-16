@@ -17,7 +17,7 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 // Creating a file to store steering values
-std::ofstream steering_vals;
+//std::ofstream steering_vals;
 
 
 // Checks if the SocketIO event has JSON data.
@@ -88,14 +88,14 @@ Eigen::MatrixXd toCarCoordinates(double px,
 
 int main() {
   // File stream to write steering data to
-  steering_vals.open("../data/steering_vals.txt", ios::out);
-  cout << "opening steering_vals.txt file" << endl;
-  // Check for errors opening the files
-  if( !steering_vals.is_open() )
-  {
-    cout << "Error opening steering_vals.txt file" << endl;
-    exit(1);
-  }
+//  steering_vals.open("../data/steering_vals.txt", ios::out);
+//  cout << "opening steering_vals.txt file" << endl;
+//  // Check for errors opening the files
+//  if( !steering_vals.is_open() )
+//  {
+//    cout << "Error opening steering_vals.txt file" << endl;
+//    exit(1);
+//  }
   uWS::Hub h;
 
   // MPC is initialized here!
@@ -182,7 +182,7 @@ int main() {
           msgJson["steering_angle"] = - steer_value/ deg2rad(25);
           msgJson["throttle"] = throttle_value;
           // Writing steering values to the file 
-          steering_vals << - steer_value/ deg2rad(25) << endl;
+//          steering_vals << - steer_value/ deg2rad(25) << endl;
           
 
 
